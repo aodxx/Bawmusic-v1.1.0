@@ -22,14 +22,14 @@ function paintJobSummary(b, settings) {
   <div class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto">
     <div class="w-full max-w-md">
       <div class="flex justify-end gap-2 mb-2">
-        <button onclick="exportJobSummaryPNG()" class="bg-gold text-navy-dark text-xs font-semibold px-3 py-2 rounded-lg"><i class="fa-solid fa-image mr-1"></i>บันทึกรูป</button>
-        <button onclick="window.print()" class="bg-navy-light text-gray-200 text-xs font-semibold px-3 py-2 rounded-lg"><i class="fa-solid fa-print mr-1"></i>พิมพ์</button>
-        <button onclick="closeBookingForm()" class="bg-navy-light text-gray-400 text-xs px-3 py-2 rounded-lg"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="exportJobSummaryPNG()" class="bg-gold text-navy-dark text-sm font-semibold px-3 py-2 rounded-lg"><i class="fa-solid fa-image mr-1"></i>บันทึกรูป</button>
+        <button onclick="window.print()" class="bg-navy-light text-gray-200 text-sm font-semibold px-3 py-2 rounded-lg"><i class="fa-solid fa-print mr-1"></i>พิมพ์</button>
+        <button onclick="closeBookingForm()" class="bg-navy-light text-gray-400 text-sm px-3 py-2 rounded-lg"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div id="job-summary-card" class="bg-gradient-to-b from-navy to-navy-dark rounded-2xl p-6 border-2 border-gold">
         <div class="text-center mb-4 pb-4 border-b border-gold/30">
           <p class="text-gold text-lg font-bold">${settings.bandName || 'Bawmusic'}</p>
-          <p class="text-gray-400 text-xs">ใบสรุปการจองงาน</p>
+          <p class="text-gray-400 text-sm">ใบสรุปการจองงาน</p>
         </div>
 
         <div class="space-y-2.5 text-sm">
@@ -44,9 +44,9 @@ function paintJobSummary(b, settings) {
 
         ${b.equipment && b.equipment.length ? `
         <div class="mt-4 pt-4 border-t border-gold/20">
-          <p class="text-gold text-xs font-semibold mb-2">อุปกรณ์ที่ใช้</p>
+          <p class="text-gold text-sm font-semibold mb-2">อุปกรณ์ที่ใช้</p>
           <div class="flex flex-wrap gap-1.5">
-            ${b.equipment.map(e => `<span class="bg-navy-light text-gray-300 text-[10px] px-2 py-1 rounded-full">${e.name} ${e.qty > 1 ? '×' + e.qty : ''}</span>`).join('')}
+            ${b.equipment.map(e => `<span class="bg-navy-light text-gray-300 text-sm px-2 py-1 rounded-full">${e.name} ${e.qty > 1 ? '×' + e.qty : ''}</span>`).join('')}
           </div>
         </div>` : ''}
 
@@ -56,10 +56,10 @@ function paintJobSummary(b, settings) {
           <div class="flex justify-between text-sm font-semibold"><span class="text-gray-200">ยอดคงเหลือ</span><span class="text-gold">${Utils.formatMoney(b.remaining)}</span></div>
         </div>
 
-        ${b.remarks ? `<div class="mt-4 pt-4 border-t border-gold/20"><p class="text-gray-400 text-xs">${b.remarks}</p></div>` : ''}
+        ${b.remarks ? `<div class="mt-4 pt-4 border-t border-gold/20"><p class="text-gray-400 text-sm">${b.remarks}</p></div>` : ''}
 
         <div class="mt-4 pt-4 border-t border-gold/30 text-center">
-          <p class="text-[10px] text-gray-500">${settings.phone || ''} ${settings.line ? '· LINE: ' + settings.line : ''}</p>
+          <p class="text-sm text-gray-500">${settings.phone || ''} ${settings.line ? '· LINE: ' + settings.line : ''}</p>
         </div>
       </div>
     </div>
@@ -70,9 +70,9 @@ function paintJobSummary(b, settings) {
 function summaryRow(icon, label, value) {
   return `
     <div class="flex items-start gap-2">
-      <i class="fa-solid ${icon} text-gold w-4 mt-0.5 text-xs"></i>
-      <span class="text-gray-500 text-xs w-16 flex-shrink-0">${label}</span>
-      <span class="text-gray-200 text-xs flex-1">${value || '-'}</span>
+      <i class="fa-solid ${icon} text-gold w-4 mt-0.5 text-sm"></i>
+      <span class="text-gray-500 text-sm w-16 flex-shrink-0">${label}</span>
+      <span class="text-gray-200 text-sm flex-1">${value || '-'}</span>
     </div>
   `;
 }
