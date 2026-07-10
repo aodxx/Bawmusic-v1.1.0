@@ -1,0 +1,89 @@
+/**
+ * BAWMUSIC — Utility functions
+ */
+
+const Utils = {
+  formatMoney(num) {
+    num = Number(num) || 0;
+    return num.toLocaleString('th-TH', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' ฿';
+  },
+
+  formatDate(dateStr) {
+    if (!dateStr) return '-';
+    const d = new Date(dateStr);
+    const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
+  },
+
+  formatDateShort(dateStr) {
+    if (!dateStr) return '-';
+    const d = new Date(dateStr);
+    const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+    return `${d.getDate()} ${months[d.getMonth()]}`;
+  },
+
+  jobTypeLabel(type) {
+    const map = {
+      Wedding: 'งานแต่งงาน', Ordination: 'งานบวช', Funeral: 'งานศพ',
+      Corporate: 'งานองค์กร', Birthday: 'งานวันเกิด', Concert: 'คอนเสิร์ต', Custom: 'อื่นๆ'
+    };
+    return map[type] || type || '-';
+  },
+
+  jobTypeIcon(type) {
+    const map = {
+      Wedding: 'fa-rings-wedding', Ordination: 'fa-om', Funeral: 'fa-fire-flame-simple',
+      Corporate: 'fa-briefcase', Birthday: 'fa-cake-candles', Concert: 'fa-guitar', Custom: 'fa-star'
+    };
+    return map[type] || 'fa-calendar';
+  },
+
+  statusBadge(status) {
+    const map = {
+      confirmed: '<span class="px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 text-[10px] font-medium">ยืนยันแล้ว</span>',
+      pending: '<span class="px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 text-[10px] font-medium">รอยืนยัน</span>',
+      cancelled: '<span class="px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 text-[10px] font-medium">ยกเลิก</span>',
+      completed: '<span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-[10px] font-medium">เสร็จสิ้น</span>'
+    };
+    return map[status] || map.confirmed;
+  },
+
+  toast(icon, title) {
+    Swal.mixin({
+      toast: true, position: 'top', showConfirmButton: false, timer: 2200, timerProgressBar: true,
+      background: '#1a1a2e', color: '#fff'
+    }).fire({ icon, title });
+  },
+
+  async confirm(title, text, confirmText = 'ยืนยัน') {
+    const result = await Swal.fire({
+      title, text, icon: 'warning', showCancelButton: true,
+      confirmButtonText: confirmText, cancelButtonText: 'ยกเลิก',
+      confirmButtonColor: '#d4af37', cancelButtonColor: '#3a3a55',
+      background: '#1a1a2e', color: '#fff'
+    });
+    return result.isConfirmed;
+  },
+
+  loading(title = 'กำลังโหลด...') {
+    Swal.fire({
+      title, allowOutsideClick: false, background: '#1a1a2e', color: '#fff',
+      didOpen: () => Swal.showLoading()
+    });
+  },
+
+  closeLoading() {
+    Swal.close();
+  },
+
+  provinces: [
+    'พัทลุง', 'สงขลา', 'นครศรีธรรมราช', 'ตรัง', 'สตูล', 'ปัตตานี', 'ยะลา', 'นราธิวาส',
+    'กระบี่', 'พังงา', 'ภูเก็ต', 'สุราษฎร์ธานี', 'ชุมพร', 'ระนอง'
+  ],
+
+  el(html) {
+    const div = document.createElement('div');
+    div.innerHTML = html.trim();
+    return div.firstElementChild;
+  }
+};
