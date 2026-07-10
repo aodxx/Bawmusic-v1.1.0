@@ -11,7 +11,7 @@ async function renderSettings() {
 
     container.innerHTML = `
       <div class="bg-navy-light rounded-2xl p-4 border border-gold/10 mb-4">
-        <h3 class="text-xs font-semibold text-gold mb-3"><i class="fa-solid fa-music mr-1.5"></i>ข้อมูลวงดนตรี</h3>
+        <h3 class="text-sm font-semibold text-gold mb-3"><i class="fa-solid fa-music mr-1.5"></i>ข้อมูลวงดนตรี</h3>
         <div class="space-y-3">
           ${settingField('bandName', 'ชื่อวง', settings.bandName)}
           ${settingField('phone', 'เบอร์โทร', settings.phone)}
@@ -24,17 +24,33 @@ async function renderSettings() {
       </div>
 
       <div class="bg-navy-light rounded-2xl p-4 border border-gold/10 mb-4">
-        <h3 class="text-xs font-semibold text-gold mb-3"><i class="fa-solid fa-file-invoice mr-1.5"></i>เทมเพลตงาน</h3>
+        <h3 class="text-sm font-semibold text-gold mb-3"><i class="fa-solid fa-circle-half-stroke mr-1.5"></i>ธีมหน้าจอ</h3>
+        <p class="text-xs text-gray-400 mb-3">สลับอัตโนมัติ: โหมดสว่าง 06:00–18:00 น. / โหมดมืดช่วงกลางคืน</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="window.__app.resetThemeToAuto()" class="flex flex-col items-center gap-1 py-3 rounded-xl bg-navy border border-gold/10 text-gray-300">
+            <i class="fa-solid fa-clock"></i><span class="text-xs">อัตโนมัติ</span>
+          </button>
+          <button onclick="window.__setManualTheme('light')" class="flex flex-col items-center gap-1 py-3 rounded-xl bg-navy border border-gold/10 text-gray-300">
+            <i class="fa-solid fa-sun"></i><span class="text-xs">สว่าง</span>
+          </button>
+          <button onclick="window.__setManualTheme('dark')" class="flex flex-col items-center gap-1 py-3 rounded-xl bg-navy border border-gold/10 text-gray-300">
+            <i class="fa-solid fa-moon"></i><span class="text-xs">มืด</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-navy-light rounded-2xl p-4 border border-gold/10 mb-4">
+        <h3 class="text-sm font-semibold text-gold mb-3"><i class="fa-solid fa-file-invoice mr-1.5"></i>เทมเพลตงาน</h3>
         <div id="templates-list" class="space-y-2">กำลังโหลด...</div>
-        <button onclick="window.__openTemplateForm()" class="w-full mt-3 bg-gold/10 border border-gold/30 text-gold text-xs font-medium rounded-xl py-2">
+        <button onclick="window.__openTemplateForm()" class="w-full mt-3 bg-gold/10 border border-gold/30 text-gold text-sm font-medium rounded-xl py-2">
           <i class="fa-solid fa-plus mr-1"></i>เพิ่มเทมเพลต
         </button>
       </div>
 
       <div class="bg-navy-light rounded-2xl p-4 border border-gold/10 mb-4">
-        <h3 class="text-xs font-semibold text-gold mb-3"><i class="fa-solid fa-circle-info mr-1.5"></i>เกี่ยวกับ</h3>
-        <p class="text-xs text-gray-400">Bawmusic v1.0 — Band Booking Operating System</p>
-        <p class="text-[10px] text-gray-500 mt-1">Powered by Google Sheets + Apps Script</p>
+        <h3 class="text-sm font-semibold text-gold mb-3"><i class="fa-solid fa-circle-info mr-1.5"></i>เกี่ยวกับ</h3>
+        <p class="text-sm text-gray-400">Bawmusic v1.0 — Band Booking Operating System</p>
+        <p class="text-sm text-gray-500 mt-1">Powered by Google Sheets + Apps Script</p>
       </div>
     `;
 
@@ -47,12 +63,20 @@ async function renderSettings() {
 function settingField(key, label, value) {
   return `
     <div>
-      <label class="text-[10px] text-gray-500 block mb-1">${label}</label>
+      <label class="text-sm text-gray-500 block mb-1">${label}</label>
       <input id="setting-${key}" type="text" value="${value || ''}"
         class="w-full bg-navy border border-gold/10 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-gold/40">
     </div>
   `;
 }
+
+window.__setManualTheme = (theme) => {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('bawmusic_theme_override', theme);
+  window.__app.darkMode = theme === 'dark';
+  window.__app.updateThemeColorMeta(theme);
+  Utils.toast('success', theme === 'dark' ? 'เปลี่ยนเป็นโหมดมืด' : 'เปลี่ยนเป็นโหมดสว่าง');
+};
 
 window.__saveSettings = async () => {
   const data = {
@@ -78,11 +102,11 @@ async function loadTemplatesIntoSettings() {
     const templates = await BawmusicAPI.listTemplates();
     const el = document.getElementById('templates-list');
     if (!el) return;
-    el.innerHTML = templates.length === 0 ? '<p class="text-xs text-gray-500">ยังไม่มีเทมเพลต</p>' :
+    el.innerHTML = templates.length === 0 ? '<p class="text-sm text-gray-500">ยังไม่มีเทมเพลต</p>' :
       templates.map(t => `
         <div class="flex items-center justify-between bg-navy rounded-lg px-3 py-2">
-          <span class="text-xs text-gray-200">${t.name}</span>
-          <span class="text-[10px] text-gray-500">${Utils.jobTypeLabel(t.jobType)}</span>
+          <span class="text-sm text-gray-200">${t.name}</span>
+          <span class="text-sm text-gray-500">${Utils.jobTypeLabel(t.jobType)}</span>
         </div>
       `).join('');
   } catch (e) { /* silent */ }
@@ -98,7 +122,7 @@ window.__openTemplateForm = async () => {
 
   const { value: formValues } = await Swal.fire({
     title: 'เพิ่มเทมเพลตงาน',
-    background: '#1a1a2e', color: '#fff',
+    background: Utils.swalBg(), color: Utils.swalColor(),
     html: `
       <input id="sw-name" class="swal2-input" placeholder="ชื่อเทมเพลต">
       <select id="sw-jobtype" class="swal2-select" style="display:flex;">
