@@ -16,11 +16,11 @@ async function renderDashboard() {
       <!-- Quick Stats -->
       <div class="grid grid-cols-2 gap-3 mb-4">
         <div class="bg-gradient-to-br from-gold to-gold-dark rounded-2xl p-4 text-navy-dark">
-          <p class="text-xs font-medium opacity-80">รายได้เดือนนี้</p>
+          <p class="text-sm font-medium opacity-80">รายได้เดือนนี้</p>
           <p class="text-xl font-bold mt-1">${Utils.formatMoney(data.monthlyIncome)}</p>
         </div>
         <div class="bg-navy-light rounded-2xl p-4 border border-gold/10">
-          <p class="text-xs font-medium text-gray-400">งานเดือนนี้</p>
+          <p class="text-sm font-medium text-gray-400">งานเดือนนี้</p>
           <p class="text-xl font-bold mt-1 text-gold">${data.thisMonthCount} งาน</p>
         </div>
       </div>
@@ -29,7 +29,7 @@ async function renderDashboard() {
       <div class="mb-4">
         <div class="flex items-center justify-between mb-2">
           <h2 class="text-sm font-semibold text-gold"><i class="fa-solid fa-calendar-day mr-1.5"></i>งานวันนี้</h2>
-          <span class="text-xs text-gray-400">${data.todayJobs.length} งาน</span>
+          <span class="text-sm text-gray-400">${data.todayJobs.length} งาน</span>
         </div>
         ${data.todayJobs.length === 0 ? emptyState('ไม่มีงานในวันนี้', 'fa-mug-hot') :
           data.todayJobs.map(jobCard).join('')}
@@ -70,12 +70,12 @@ async function renderDashboard() {
         <div class="space-y-2">
           ${data.recentActivities.slice(0, 5).map(a => `
             <div class="flex items-center gap-3 bg-navy-light/50 rounded-xl p-2.5">
-              <div class="w-8 h-8 rounded-full bg-navy flex items-center justify-center text-gold text-xs">
+              <div class="w-8 h-8 rounded-full bg-navy flex items-center justify-center text-gold text-sm">
                 <i class="fa-solid ${Utils.jobTypeIcon(a.jobType)}"></i>
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-xs text-gray-200 truncate">${a.customerName} — ${Utils.jobTypeLabel(a.jobType)}</p>
-                <p class="text-[10px] text-gray-500">${Utils.formatDateShort(a.date)}</p>
+                <p class="text-sm text-gray-200 truncate">${a.customerName} — ${Utils.jobTypeLabel(a.jobType)}</p>
+                <p class="text-sm text-gray-500">${Utils.formatDateShort(a.date)}</p>
               </div>
             </div>
           `).join('')}
@@ -96,11 +96,11 @@ function jobCard(b) {
       </div>
       <div class="flex-1 min-w-0">
         <p class="text-sm font-medium text-gray-100 truncate">${b.customerName}</p>
-        <p class="text-xs text-gray-400">${Utils.jobTypeLabel(b.jobType)} · ${b.venue || 'ไม่ระบุสถานที่'}</p>
+        <p class="text-sm text-gray-400">${Utils.jobTypeLabel(b.jobType)} · ${b.venue || 'ไม่ระบุสถานที่'}</p>
       </div>
       <div class="text-right flex-shrink-0">
-        <p class="text-xs text-gold font-medium">${Utils.formatDateShort(b.date)}</p>
-        <p class="text-[10px] text-gray-500">${b.startTime || ''}</p>
+        <p class="text-sm text-gold font-medium">${Utils.formatDateShort(b.date)}</p>
+        <p class="text-sm text-gray-500">${b.startTime || ''}</p>
       </div>
     </div>
   `;
@@ -110,7 +110,7 @@ function quickAction(icon, label, onclick) {
   return `
     <button onclick="${onclick}" class="flex flex-col items-center gap-1.5 bg-navy-light rounded-2xl py-3 border border-gold/10 active:scale-95 transition-transform">
       <i class="fa-solid ${icon} text-gold"></i>
-      <span class="text-[10px] text-gray-300">${label}</span>
+      <span class="text-sm text-gray-300">${label}</span>
     </button>
   `;
 }
@@ -119,7 +119,7 @@ function emptyState(text, icon = 'fa-inbox') {
   return `
     <div class="flex flex-col items-center justify-center py-8 text-gray-500">
       <i class="fa-solid ${icon} text-2xl mb-2 opacity-50"></i>
-      <p class="text-xs">${text}</p>
+      <p class="text-sm">${text}</p>
     </div>
   `;
 }
@@ -128,7 +128,7 @@ function errorState(err) {
   return `
     <div class="flex flex-col items-center justify-center py-12 text-gray-500">
       <i class="fa-solid fa-triangle-exclamation text-2xl mb-2 text-red-400"></i>
-      <p class="text-xs text-center">โหลดข้อมูลไม่สำเร็จ<br>${err.message || err}</p>
+      <p class="text-sm text-center">โหลดข้อมูลไม่สำเร็จ<br>${err.message || err}</p>
     </div>
   `;
 }
