@@ -1,0 +1,45 @@
+/* BAWMUSIC — Custom styles beyond Tailwind utilities */
+
+[x-cloak] { display: none !important; }
+
+* { -webkit-tap-highlight-color: transparent; }
+
+body {
+  overscroll-behavior-y: contain;
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 4px; }
+
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0.5rem); }
+
+/* SweetAlert2 theming to match Navy/Gold luxury design */
+.swal2-popup { border-radius: 1.25rem !important; font-family: 'Kanit', sans-serif !important; }
+.swal2-input, .swal2-textarea, .swal2-select {
+  background: #0f0f1e !important;
+  border: 1px solid rgba(212, 175, 55, 0.2) !important;
+  color: #fff !important;
+  border-radius: 0.5rem !important;
+  font-family: 'Kanit', sans-serif !important;
+  font-size: 0.875rem !important;
+}
+.swal2-select { padding: 0.5rem !important; }
+.swal2-title { font-family: 'Kanit', sans-serif !important; }
+.swal2-html-container { font-family: 'Kanit', sans-serif !important; }
+
+/* Smooth active-state feedback for tappable cards (mobile-first) */
+button, [onclick] { touch-action: manipulation; }
+
+/* Print styles for Job Summary */
+@media print {
+  body * { visibility: hidden; }
+  #job-summary-card, #job-summary-card * { visibility: visible; }
+  #job-summary-card { position: absolute; top: 0; left: 0; width: 100%; }
+}
+
+/* Fade-in for dynamically injected view content */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
