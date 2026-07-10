@@ -3,6 +3,17 @@
  */
 
 const Utils = {
+  // ---------- Theme helpers ----------
+  isLightTheme() {
+    return document.documentElement.getAttribute('data-theme') === 'light';
+  },
+  swalBg() {
+    return Utils.isLightTheme() ? '#ffffff' : '#1a1a2e';
+  },
+  swalColor() {
+    return Utils.isLightTheme() ? '#1a1a2e' : '#ffffff';
+  },
+
   formatMoney(num) {
     num = Number(num) || 0;
     return num.toLocaleString('th-TH', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' ฿';
@@ -40,10 +51,10 @@ const Utils = {
 
   statusBadge(status) {
     const map = {
-      confirmed: '<span class="px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 text-[10px] font-medium">ยืนยันแล้ว</span>',
-      pending: '<span class="px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 text-[10px] font-medium">รอยืนยัน</span>',
-      cancelled: '<span class="px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 text-[10px] font-medium">ยกเลิก</span>',
-      completed: '<span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-[10px] font-medium">เสร็จสิ้น</span>'
+      confirmed: '<span class="px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 text-sm font-medium">ยืนยันแล้ว</span>',
+      pending: '<span class="px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 text-sm font-medium">รอยืนยัน</span>',
+      cancelled: '<span class="px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 text-sm font-medium">ยกเลิก</span>',
+      completed: '<span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-sm font-medium">เสร็จสิ้น</span>'
     };
     return map[status] || map.confirmed;
   },
@@ -51,7 +62,7 @@ const Utils = {
   toast(icon, title) {
     Swal.mixin({
       toast: true, position: 'top', showConfirmButton: false, timer: 2200, timerProgressBar: true,
-      background: '#1a1a2e', color: '#fff'
+      background: Utils.swalBg(), color: Utils.swalColor()
     }).fire({ icon, title });
   },
 
@@ -60,14 +71,14 @@ const Utils = {
       title, text, icon: 'warning', showCancelButton: true,
       confirmButtonText: confirmText, cancelButtonText: 'ยกเลิก',
       confirmButtonColor: '#d4af37', cancelButtonColor: '#3a3a55',
-      background: '#1a1a2e', color: '#fff'
+      background: Utils.swalBg(), color: Utils.swalColor()
     });
     return result.isConfirmed;
   },
 
   loading(title = 'กำลังโหลด...') {
     Swal.fire({
-      title, allowOutsideClick: false, background: '#1a1a2e', color: '#fff',
+      title, allowOutsideClick: false, background: Utils.swalBg(), color: Utils.swalColor(),
       didOpen: () => Swal.showLoading()
     });
   },
