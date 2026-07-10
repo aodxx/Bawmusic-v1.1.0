@@ -13,6 +13,25 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Bawmusic">
 
+<script>
+  // ตั้งค่าธีมก่อนวาดหน้าจอ เพื่อไม่ให้กระพริบ
+  (function () {
+    var saved = localStorage.getItem('bawmusic_theme_override');
+    var theme;
+    if (saved === 'light' || saved === 'dark') {
+      theme = saved;
+    } else {
+      var hour = new Date().getHours();
+      theme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+    }
+    document.documentElement.setAttribute('data-theme', theme);
+    document.addEventListener('DOMContentLoaded', function () {
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'light' ? '#f5f2e8' : '#1a1a2e');
+    });
+  })();
+</script>
+
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -42,15 +61,15 @@
 <!-- ===== TOP BAR ===== -->
 <header class="sticky top-0 z-40 bg-navy/95 backdrop-blur border-b border-gold/20 px-4 py-3 flex items-center justify-between">
   <div class="flex items-center gap-2">
-    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold to-gold-dark flex items-center justify-center">
+    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold to-gold-dark flex items-center justify-center">
       <i class="fa-solid fa-music text-navy-dark text-sm"></i>
     </div>
     <div>
       <h1 class="text-sm font-semibold text-gold leading-none" x-text="settings.bandName || 'Bawmusic'"></h1>
-      <p class="text-[10px] text-gray-400 leading-none mt-0.5" x-text="viewTitles[currentView]"></p>
+      <p class="text-sm text-gray-400 leading-none mt-0.5" x-text="viewTitles[currentView]"></p>
     </div>
   </div>
-  <button @click="toggleDarkMode()" class="w-9 h-9 rounded-full bg-navy-light flex items-center justify-center text-gold">
+  <button @click="toggleDarkMode()" class="w-10 h-10 rounded-full bg-navy-light flex items-center justify-center text-gold">
     <i class="fa-solid" :class="darkMode ? 'fa-moon' : 'fa-sun'"></i>
   </button>
 </header>
@@ -89,6 +108,20 @@
   </div>
 </main>
 
+<!-- ===== INSTALL APP BANNER ===== -->
+<div x-show="showInstallBanner" x-cloak x-transition
+  class="fixed bottom-20 left-3 right-3 z-40 max-w-2xl mx-auto bg-gradient-to-r from-gold to-gold-dark rounded-2xl p-3.5 shadow-lg shadow-gold/30 flex items-center gap-3">
+  <div class="w-10 h-10 rounded-xl bg-navy-dark flex items-center justify-center flex-shrink-0">
+    <i class="fa-solid fa-music text-gold"></i>
+  </div>
+  <div class="flex-1 min-w-0">
+    <p class="text-sm font-semibold text-navy-dark leading-tight">ติดตั้ง Bawmusic ลงหน้าจอหลัก</p>
+    <p class="text-xs text-navy-dark/80 leading-tight mt-0.5" x-text="isIOS ? 'แตะปุ่มแชร์ แล้วเลือก เพิ่มไปยังหน้าจอโฮม' : 'ใช้งานได้เหมือนแอปจริง แม้ออฟไลน์'"></p>
+  </div>
+  <button x-show="!isIOS" @click="installApp()" class="bg-navy-dark text-gold text-xs font-semibold px-3 py-2 rounded-xl flex-shrink-0">ติดตั้ง</button>
+  <button @click="dismissInstallBanner()" class="text-navy-dark/60 px-1 flex-shrink-0"><i class="fa-solid fa-xmark"></i></button>
+</div>
+
 <!-- ===== FLOATING ACTION BUTTON ===== -->
 <button x-show="['dashboard','bookings'].includes(currentView)" @click="openBookingForm()"
   class="fixed bottom-24 right-5 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-gold to-gold-dark shadow-lg shadow-gold/30 flex items-center justify-center text-navy-dark text-xl active:scale-90 transition-transform">
@@ -99,10 +132,10 @@
 <nav class="fixed bottom-0 left-0 right-0 z-40 bg-navy/95 backdrop-blur border-t border-gold/20 px-2 py-2 pb-safe">
   <div class="max-w-2xl mx-auto grid grid-cols-5 gap-1">
     <template x-for="item in navItems" :key="item.view">
-      <button @click="setView(item.view)" class="flex flex-col items-center gap-1 py-1.5 rounded-xl transition-colors"
+      <button @click="setView(item.view)" class="flex flex-col items-center gap-1 py-2 rounded-xl transition-colors"
         :class="currentView === item.view ? 'text-gold' : 'text-gray-500'">
         <i class="fa-solid text-lg" :class="item.icon"></i>
-        <span class="text-[10px] font-medium" x-text="item.label"></span>
+        <span class="text-sm font-medium" x-text="item.label"></span>
       </button>
     </template>
   </div>
