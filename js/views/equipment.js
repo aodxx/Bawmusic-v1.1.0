@@ -1,127 +1,119 @@
 /**
- * BAWMUSIC — Equipment Center View
+ * BAWMUSIC — Customers View
  */
 
-let __equipmentCache = [];
+let __customersCache = [];
 
-const EQUIPMENT_CATEGORIES = ['Sound Systems', 'Lighting', 'Stage', 'Accessories', 'Support Equipment'];
-const CATEGORY_LABELS = {
-  'Sound Systems': 'ระบบเสียง', 'Lighting': 'ไฟ/แสง', 'Stage': 'เวที',
-  'Accessories': 'อุปกรณ์เสริม', 'Support Equipment': 'อุปกรณ์สนับสนุน'
-};
-const CATEGORY_ICONS = {
-  'Sound Systems': 'fa-volume-high', 'Lighting': 'fa-lightbulb', 'Stage': 'fa-drum',
-  'Accessories': 'fa-table', 'Support Equipment': 'fa-plug'
-};
-
-async function renderEquipment() {
-  const container = document.getElementById('view-equipment');
+async function renderCustomers() {
+  const container = document.getElementById('view-customers');
   container.innerHTML = `<div class="space-y-3 animate-pulse"><div class="h-16 bg-navy-light rounded-2xl"></div><div class="h-16 bg-navy-light rounded-2xl"></div></div>`;
 
   try {
-    __equipmentCache = await BawmusicAPI.listEquipment();
-    paintEquipment();
+    __customersCache = await BawmusicAPI.listCustomers();
+    paintCustomers(__customersCache);
   } catch (err) {
     container.innerHTML = errorState(err);
   }
 }
 
-function paintEquipment() {
-  const container = document.getElementById('view-equipment');
+function paintCustomers(list) {
+  const container = document.getElementById('view-customers');
   container.innerHTML = `
-    <button onclick="window.__openEquipmentForm()" class="w-full mb-3 bg-gold/10 border border-gold/30 text-gold text-sm font-medium rounded-xl py-2.5">
-      <i class="fa-solid fa-plus mr-1.5"></i>เพิ่มอุปกรณ์ใหม่
+    <div class="relative mb-3">
+      <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+      <input type="text" placeholder="ค้นหาลูกค้า (ชื่อ, เบอร์, LINE)..." oninput="window.__searchCustomers(this.value)"
+        class="w-full bg-navy-light border border-gold/10 rounded-xl pl-9 pr-3 py-2.5 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-gold/40">
+    </div>
+    <button onclick="window.__openCustomerForm()" class="w-full mb-3 bg-gold/10 border border-gold/30 text-gold text-sm font-medium rounded-xl py-2.5">
+      <i class="fa-solid fa-user-plus mr-1.5"></i>เพิ่มลูกค้าใหม่
     </button>
-    ${EQUIPMENT_CATEGORIES.map(cat => {
-      const items = __equipmentCache.filter(e => e.category === cat);
-      if (items.length === 0) return '';
-      return `
-        <div class="mb-4">
-          <h3 class="text-xs font-semibold text-gold mb-2"><i class="fa-solid ${CATEGORY_ICONS[cat]} mr-1.5"></i>${CATEGORY_LABELS[cat]}</h3>
-          <div class="space-y-2">
-            ${items.map(equipmentRow).join('')}
-          </div>
-        </div>
-      `;
-    }).join('')}
-    ${__equipmentCache.length === 0 ? emptyState('ยังไม่มีอุปกรณ์ในระบบ', 'fa-boxes-stacked') : ''}
+    <p class="text-sm text-gray-500 mb-2">${list.length} คน</p>
+    <div class="space-y-2" id="customers-list">
+      ${list.length === 0 ? emptyState('ยังไม่มีข้อมูลลูกค้า', 'fa-users') : list.map(customerRow).join('')}
+    </div>
   `;
 }
 
-function equipmentRow(e) {
-  const qty = Number(e.availableQty) || 0;
-  const lowStock = qty <= 1;
+window.__searchCustomers = (query) => {
+  const filtered = !query ? __customersCache : __customersCache.filter(c =>
+    (c.name || '').toLowerCase().includes(query.toLowerCase()) ||
+    String(c.phone || '').includes(query) ||
+    (c.line || '').toLowerCase().includes(query.toLowerCase())
+  );
+  document.getElementById('customers-list').innerHTML = filtered.length === 0 ?
+    emptyState('ไม่พบลูกค้าที่ค้นหา', 'fa-user-slash') : filtered.map(customerRow).join('');
+};
+
+function customerRow(c) {
   return `
-    <div class="bg-navy-light rounded-xl p-3 border border-gold/10 flex items-center justify-between" onclick="window.__openEquipmentForm('${e.id}')">
-      <div>
-        <p class="text-sm text-gray-100 font-medium">${e.name}</p>
-        ${e.remarks ? `<p class="text-[10px] text-gray-500">${e.remarks}</p>` : ''}
+    <div class="bg-navy-light rounded-2xl p-3.5 border border-gold/10">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center text-gold text-sm font-semibold">
+            ${(c.name || '?').charAt(0)}
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-100">${c.name}</p>
+            <p class="text-sm text-gray-500">${c.phone || '-'} ${c.line ? '· ' + c.line : ''}</p>
+          </div>
+        </div>
+        <button onclick="window.__openCustomerForm('${c.id}')" class="text-gray-400 px-2"><i class="fa-solid fa-ellipsis-vertical"></i></button>
       </div>
-      <div class="text-right">
-        <p class="text-sm font-semibold ${lowStock ? 'text-red-400' : 'text-gold'}">${qty} ${e.unit || ''}</p>
-        <p class="text-[9px] text-gray-500">พร้อมใช้งาน</p>
+      <div class="grid grid-cols-3 gap-2 text-center border-t border-gold/10 pt-2">
+        <div>
+          <p class="text-sm font-semibold text-gold">${c.totalBookings || 0}</p>
+          <p class="text-sm text-gray-500">งานทั้งหมด</p>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-gold">${Utils.formatMoney(c.totalRevenue)}</p>
+          <p class="text-sm text-gray-500">รายได้รวม</p>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-gold">${c.favoriteJobType ? Utils.jobTypeLabel(c.favoriteJobType) : '-'}</p>
+          <p class="text-sm text-gray-500">งานที่ชอบ</p>
+        </div>
       </div>
     </div>
   `;
 }
 
-window.__openEquipmentForm = async (id) => {
+window.__openCustomerForm = async (id) => {
   let existing = null;
-  if (id) existing = __equipmentCache.find(e => e.id === id);
-
-  const categoryOptions = EQUIPMENT_CATEGORIES.map(c =>
-    `<option value="${c}" ${existing?.category === c ? 'selected' : ''}>${CATEGORY_LABELS[c]}</option>`
-  ).join('');
+  if (id) existing = __customersCache.find(c => c.id === id);
 
   const { value: formValues } = await Swal.fire({
-    title: existing ? 'แก้ไขอุปกรณ์' : 'เพิ่มอุปกรณ์ใหม่',
-    background: '#1a1a2e', color: '#fff',
+    title: existing ? 'แก้ไขข้อมูลลูกค้า' : 'เพิ่มลูกค้าใหม่',
+    background: Utils.swalBg(), color: Utils.swalColor(),
     html: `
-      <input id="sw-name" class="swal2-input" placeholder="ชื่ออุปกรณ์" value="${existing?.name || ''}">
-      <select id="sw-category" class="swal2-select" style="display:flex;">${categoryOptions}</select>
-      <input id="sw-qty" type="number" class="swal2-input" placeholder="จำนวนที่มี" value="${existing?.availableQty ?? ''}">
-      <input id="sw-unit" class="swal2-input" placeholder="หน่วย (ชิ้น/ชุด/ตัว)" value="${existing?.unit || 'ชิ้น'}">
-      <input id="sw-remarks" class="swal2-input" placeholder="หมายเหตุ" value="${existing?.remarks || ''}">
+      <input id="sw-name" class="swal2-input" placeholder="ชื่อ-นามสกุล" value="${existing?.name || ''}">
+      <input id="sw-phone" class="swal2-input" placeholder="เบอร์โทร" value="${existing?.phone || ''}">
+      <input id="sw-line" class="swal2-input" placeholder="LINE ID" value="${existing?.line || ''}">
+      <input id="sw-address" class="swal2-input" placeholder="ที่อยู่" value="${existing?.address || ''}">
+      <textarea id="sw-notes" class="swal2-textarea" placeholder="โน้ตเพิ่มเติม">${existing?.notes || ''}</textarea>
     `,
     focusConfirm: false,
     showCancelButton: true,
-    showDenyButton: !!existing,
-    denyButtonText: 'ลบ',
-    denyButtonColor: '#dc2626',
     confirmButtonText: 'บันทึก',
     cancelButtonText: 'ยกเลิก',
     confirmButtonColor: '#d4af37',
     preConfirm: () => ({
       name: document.getElementById('sw-name').value,
-      category: document.getElementById('sw-category').value,
-      availableQty: Number(document.getElementById('sw-qty').value) || 0,
-      unit: document.getElementById('sw-unit').value,
-      remarks: document.getElementById('sw-remarks').value
+      phone: document.getElementById('sw-phone').value,
+      line: document.getElementById('sw-line').value,
+      address: document.getElementById('sw-address').value,
+      notes: document.getElementById('sw-notes').value
     })
-  }).then(async (result) => {
-    if (result.isDenied && existing) {
-      const ok = await Utils.confirm('ลบอุปกรณ์นี้?', existing.name, 'ลบ');
-      if (ok) {
-        Utils.loading('กำลังลบ...');
-        await BawmusicAPI.deleteEquipment(existing.id);
-        Utils.closeLoading();
-        Utils.toast('success', 'ลบสำเร็จ');
-        renderEquipment();
-      }
-      return {};
-    }
-    return result;
   });
 
   if (!formValues || !formValues.name) return;
 
   Utils.loading('กำลังบันทึก...');
   try {
-    if (existing) await BawmusicAPI.updateEquipment(existing.id, formValues);
-    else await BawmusicAPI.createEquipment(formValues);
+    if (existing) await BawmusicAPI.updateCustomer(existing.id, formValues);
+    else await BawmusicAPI.createCustomer(formValues);
     Utils.closeLoading();
     Utils.toast('success', 'บันทึกสำเร็จ');
-    renderEquipment();
+    renderCustomers();
   } catch (err) {
     Utils.closeLoading();
     Utils.toast('error', 'เกิดข้อผิดพลาด');
